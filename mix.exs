@@ -8,6 +8,13 @@ defmodule Issues.Mixfile do
      escript: escript_config(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: [
+       "coveralls": :test,
+       "coveralls.detail": :test,
+       "coveralls.post": :test,
+       "coveralls.html": :test
+     ],
      deps: deps()]
   end
 
@@ -33,7 +40,8 @@ defmodule Issues.Mixfile do
       {:httpoison, "~> 0.11.2"},
       {:poison, "~> 3.1"},
       {:ex_doc, "~> 0.15.1"},
-      {:earmark, "~> 1.2", override: true}
+      {:earmark, "~> 1.2", override: true},
+      {:excoveralls, "~> 0.6.3", only: :test}
     ]
   end
 
