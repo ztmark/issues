@@ -30,15 +30,23 @@ defmodule Issues.CLI do
     end
   end  
 
+  import Issues.TableFormatter, only: [ print_table_for_columns: 2]
+
   def process(:help) do
     IO.puts """
     usage: issues <user> <project> [count | #{@default_count}]
     """
   end
-  def process({user, project, _count}) do
+  def process({user, project, count}) do
     Issues.GithubIssues.fetch(user, project)
     |> decode_response
+    |> sort_into_ascending_order
+    |> Enum.take(count)
+    |> print_table_for_columns(["number", "title", "created_at"])
+    # |> Enum.each(&format/1)
   end
+
+  # defp format(%{"number" => num, "title" => title, "created_at" => ca}), do: IO.puts "#{num}, #{title}, #{ca}"
 
   def decode_response({:ok, body}), do: body
 
@@ -48,5 +56,9 @@ defmodule Issues.CLI do
     System.halt(2)
   end
 
+  def sort_into_ascending_order(list_of_issues) do
+    Enum.sort list_of_issues, fn i1, i2 -> Map.get(i1, "created_at") <= Map.get(i2, "created_at") end
+  end
+  
   
 end
